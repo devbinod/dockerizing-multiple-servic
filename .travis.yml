@@ -5,3 +5,20 @@ before_install:
   - docker build -t pantbinod/multi-container-app -f ./client/Dockerfile.dev
 script:
   - docker run pantbinod/multi-container-app npm test -- --coverage
+after_success:
+  - docker build -t pantbinod/multi-client ./client
+  - docker build -t pantbinod/multi-nginx ./nginx
+  - docker build -t pantbinod/multi-server ./server
+  - docker build -t pantbinod/multi-worker ./worker
+  #login into docker hub
+  - echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_ID}" --password-stdin
+
+  #build image then push into docker hub
+  - docker push pantbinod/multi-client
+  - docker push pantbinod/multi-nginx
+  - docker push pantbinod/multi-server
+  - docker push pantbinod/multi-worker
+
+
+
+  
